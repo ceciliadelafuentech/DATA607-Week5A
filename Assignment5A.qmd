@@ -10,3 +10,5 @@ editor: visual
 ## Approach Deliverable
 
 ### Overview
+
+For Assignment 5A, the plan is to first load the data into R and use tidyr and dplyr to clean and transform it from wide to long format. Any missing values will be addressed during the cleaning process. After tidying the data, I will compare the two airlines based on the percentage of delayed flights. I will first compare the airlines overall and then compare their arrival delays across the five destinations. I will use summary tables and visualizations to show these comparisons.
