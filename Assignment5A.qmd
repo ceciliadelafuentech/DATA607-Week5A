@@ -12,3 +12,152 @@ editor: visual
 ### Overview
 
 For Assignment 5A, the plan is to first load the data into R and use tidyr and dplyr to clean and transform it from wide to long format. Any missing values will be addressed during the cleaning process. After tidying the data, I will compare the two airlines based on the percentage of delayed flights. I will first compare the airlines overall and then compare their arrival delays across the five destinations. I will use summary tables and visualizations to show these comparisons.
+
+## Code Base Deliverable
+
+### Load libraries
+
+```{r}
+library(tidyverse)
+```
+
+### Data and transformations
+
+Load data from github and examine it
+
+```{r}
+airline_delays <- read_csv(
+  "https://raw.githubusercontent.com/ceciliadelafuentech/DATA607-Week5A/refs/heads/main/Assignment5A_flight_data.csv"
+)
+
+glimpse(airline_delays)
+```
+
+Check for blanks in Airline column
+
+```{r}
+is.na(airline_delays$Airline)
+```
+
+fill() is a function that replaces the blank values with the value from the previous row, in this case the missing values are in the Airline column and by using fill() the second row becomes "ALASKA" because that is the value in the first row.
+
+```{r}
+airline_delays <- airline_delays %>%
+  fill(Airline)
+```
+
+With pivot_longer() we are changing the dataframe from wide to long format. The code will only keep Airline and Status and columns while changing the city columns into values under a new column Destination and their respective values to another column Count.
+
+```{r}
+airline_delays_long <- airline_delays %>%
+  pivot_longer(
+    cols = -c(Airline, Status),
+    names_to = "Destination",
+    values_to = "Count"
+  )
+```
+
+Calculate the total number of flights grouped by Airline and Status
+
+```{r}
+overall <- airline_delays_long %>%
+  group_by(Airline, Status) %>%
+  summarise(
+    Count = sum(Count),
+    .groups = "drop"
+  )
+
+head(overall)
+```
+
+Add a new column to show that total number of flights for each airline
+
+```{r}
+overall <- overall %>%
+  group_by(Airline) %>%
+  mutate(
+    Total = sum(Count)
+  )
+head(overall)
+```
+
+Now we can calculate the percentage of each status and airline
+
+```{r}
+overall <- overall %>%
+  mutate(
+    Percentage = Count / Total * 100
+  )
+```
+
+To analyze based on city, group by Airline, Destination and Status and assign to new dataframe
+
+```{r}
+by_city <- airline_delays_long %>%
+  group_by(Airline, Destination, Status)
+```
+
+Apply calculations
+
+```{r}
+by_city <- airline_delays_long %>%
+  group_by(Airline, Destination, Status) %>%
+  summarise(
+    Count = sum(Count),
+    .groups = "drop"
+  )
+```
+
+New Total column
+
+```{r}
+by_city <- by_city %>%
+  group_by(Airline, Destination) %>%
+  mutate(
+    Total = sum(Count)
+  )
+```
+
+And Percentage
+
+```{r}
+by_city <- by_city %>%
+  mutate(
+    Percentage = Count / Total * 100
+  )
+```
+
+Filter cities only with delayed status and create table
+
+```{r}
+by_city_delays <- by_city %>%
+  filter(Status == "delayed")
+```
+
+```{r}
+print(overall)
+```
+
+Overall, ALASKA had a higher percentage of delayed flights than AM WEST; 13.3% compared with 10.9%.
+
+```{r}
+print(by_city_delays)
+```
+
+However, ALASKA had a lower percentage of delayed flights than AM WEST in each of the five individual destinations. The city-by-city comparison shows that ALASKA had a lower percentage of delayed flights at each of the five destinations. The difference was smallest in Phoenix, where 5.2% of ALASKA flights and 7.9% of AM WEST flights were delayed. The largest difference occurred in San Francisco, where 16.9% of ALASKA flights and 28.7% of AM WEST flights were delayed.
+
+The discrepancy occurs because the two airlines have different numbers of flights across the five destinations. AM WEST has a larger percentage of its flights in Phoenix, where its delay rate is lower, while ALASKA has more flights in Seattle and San Francisco, where its delay rates are higher. The overall percentages are influenced by the different distribution of flights across the destinations. This causes AM WEST to have a lower overall delay even though it is higher than ALASKA's in every destination.
+
+```{r}
+ggplot(by_city_delays, aes(x = Destination, y = Percentage, fill = Airline)) +
+  geom_col(position = "dodge") +
+  labs(
+    x = "Destination",
+    y = "Percentage of Delayed Flights",
+    title = "Percentage of Delayed Flights by Destination"
+  )
+```
+
+### Conclusion
+
+The airline delay data was first cleaned by filling in the missing airline values and then transformed from wide to long format using tidyr. The data was then used to compare the percentage of delayed flights for ALASKA and AM WEST overall and across five destinations. Overall, AM WEST had a lower percentage of delayed flights (10.9%) than ALASKA (13.3%). However, the city-by-city comparison showed that ALASKA had a lower percentage of delayed flights in every destination. This difference demonstrates how the distribution of flights across destinations can affect an overall comparison. Looking at both overall and city percentages provides a more complete picture of the data.
