@@ -144,7 +144,7 @@ Overall, ALASKA had a higher percentage of delayed flights than AM WEST; 13.3% c
 print(by_city_delays)
 ```
 
-However, ALASKA had a lower percentage of delayed flights than AM WEST in each of the five individual destinations. The city-by-city comparison shows that ALASKA had a lower percentage of delayed flights at each of the five destinations. The difference was smallest in Phoenix, where 5.2% of ALASKA flights and 7.9% of AM WEST flights were delayed. The largest difference occurred in San Francisco, where 16.9% of ALASKA flights and 28.7% of AM WEST flights were delayed.
+However, the city-by-city comparison shows that ALASKA had a lower percentage of delayed flights at each of the five destinations. The difference was smallest in Phoenix, where 5.2% of ALASKA flights and 7.9% of AM WEST flights were delayed. The largest difference occurred in San Francisco, where 16.9% of ALASKA flights and 28.7% of AM WEST flights were delayed.
 
 The discrepancy occurs because the two airlines have different numbers of flights across the five destinations. AM WEST has a larger percentage of its flights in Phoenix, where its delay rate is lower, while ALASKA has more flights in Seattle and San Francisco, where its delay rates are higher. The overall percentages are influenced by the different distribution of flights across the destinations. This causes AM WEST to have a lower overall delay even though it is higher than ALASKA's in every destination.
 
